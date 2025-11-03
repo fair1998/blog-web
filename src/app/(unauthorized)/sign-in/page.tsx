@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PAGE_URLS } from "@/constants/page-urls";
+import Link from "next/link";
 
 export default function SignPage() {
   return (
@@ -44,9 +46,11 @@ export default function SignPage() {
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
+        <Link href={PAGE_URLS.HOME} className="w-full">
+          <Button type="submit" className="w-full">
+            Login
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
