@@ -47,6 +47,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
