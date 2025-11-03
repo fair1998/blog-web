@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function SignPage({}: NextAppPageProps) {
+export default function SignPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
