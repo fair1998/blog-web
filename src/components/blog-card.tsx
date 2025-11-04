@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { Eye, SquarePen, Trash } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "./ui/badge";
 import {
@@ -16,10 +15,23 @@ import {
 import { Separator } from "./ui/separator";
 
 interface BlogCardProps {
+  title: string;
+  description: string;
+  content: string;
   isPublic: boolean;
+
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export default function BlogCard({ isPublic }: BlogCardProps) {
+export default function BlogCard({
+  title,
+  description,
+  content,
+  isPublic,
+  onEdit,
+  onDelete,
+}: BlogCardProps) {
   const [isViewExpanded, setIsViewExpanded] = useState(false);
 
   const handleViewToggle = () => {
@@ -29,10 +41,8 @@ export default function BlogCard({ isPublic }: BlogCardProps) {
   return (
     <Card>
       <CardHeader className="has-data-[slot=card-action]:grid-cols-[1fr] sm:has-data-[slot=card-action]:grid-cols-[1fr_auto]">
-        <CardTitle>Blog 0001</CardTitle>
-        <CardDescription>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        </CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
 
         <CardAction className="col-start-1 sm:col-start-2">
           <div className="flex items-center gap-x-4 h-5">
@@ -48,15 +58,24 @@ export default function BlogCard({ isPublic }: BlogCardProps) {
               <Eye className="size-5" />
             </button>
             <Separator orientation="vertical" />
-            <Link href="#" className="hover:text-secondary transition-colors">
+            <button
+              onClick={onEdit}
+              className="hover:text-secondary transition-colors"
+            >
               <SquarePen className="size-5" />
-            </Link>
+            </button>
             <Separator orientation="vertical" />
-            <Link href="#" className="hover:text-destructive transition-colors">
+            <button
+              onClick={onDelete}
+              className="hover:text-destructive transition-colors"
+            >
               <Trash className="size-5" />
-            </Link>
+            </button>
             <Separator orientation="vertical" />
-            <Badge variant={isPublic ? "default" : "secondary"}>
+            <Badge
+              variant={isPublic ? "default" : "secondary"}
+              className="min-w-16"
+            >
               {isPublic ? "Public" : "Private"}
             </Badge>
           </div>
@@ -65,21 +84,7 @@ export default function BlogCard({ isPublic }: BlogCardProps) {
 
       <CardContent>
         <p className={cn(isViewExpanded ? "line-clamp-none" : "line-clamp-3")}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias
-          quibusdam, aliquam deleniti aliquid ipsam magnam dolore!
-          Necessitatibus eligendi a tempora iusto reiciendis impedit alias
-          doloremque nesciunt asperiores nemo, quibusdam possimus. Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Sapiente nihil, obcaecati
-          quisquam doloribus impedit consectetur. Ducimus explicabo vel velit
-          reiciendis consectetur, inventore quo omnis. Vitae iusto veniam
-          blanditiis sit similique. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Molestias quibusdam, aliquam deleniti aliquid ipsam
-          magnam dolore! Necessitatibus eligendi a tempora iusto reiciendis
-          impedit alias doloremque nesciunt asperiores nemo, quibusdam possimus.
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-          nihil, obcaecati quisquam doloribus impedit consectetur. Ducimus
-          explicabo vel velit reiciendis consectetur, inventore quo omnis. Vitae
-          iusto veniam blanditiis sit similique.
+          {content}
         </p>
       </CardContent>
     </Card>
