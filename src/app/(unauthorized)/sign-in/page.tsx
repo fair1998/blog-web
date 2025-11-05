@@ -17,6 +17,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { InputPassword } from "@/components/ui/input-password";
 import {
   SignInFormData,
   SignInFormSchema,
@@ -83,10 +84,9 @@ export default function SignInPage() {
                   <FieldLabel htmlFor="login-form-password">
                     Password
                   </FieldLabel>
-                  <Input
+                  <InputPassword
                     {...field}
                     id="login-form-password"
-                    type="password"
                     aria-invalid={fieldState.invalid}
                     placeholder="Enter your password"
                   />
