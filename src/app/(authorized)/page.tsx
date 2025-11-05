@@ -7,6 +7,13 @@ import {
 import PostCard from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -20,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { useBlogPosts } from "@/hooks/use-blog-posts";
 import { BlogPost } from "@/types/blog";
-import { Search } from "lucide-react";
+import { Search, SearchCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface PostFormDialogState {
@@ -143,6 +150,18 @@ export default function HomePage() {
           />
         ))}
       </div>
+
+      {filteredPosts.length === 0 && (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia>
+              <SearchCheck className="size-10" />
+            </EmptyMedia>
+            <EmptyTitle>No data</EmptyTitle>
+            <EmptyDescription>No data found</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
 
       <PostFormDialog
         open={postFormDialogState.open}
