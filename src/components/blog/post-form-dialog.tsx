@@ -19,7 +19,6 @@ import { PostFormData, postFormSchema } from "@/lib/validators/post.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import * as z from "zod";
 import { Switch } from "../ui/switch";
 
 const defaultValues = {
@@ -32,7 +31,7 @@ const defaultValues = {
 interface PostFormDialogProps {
   open?: boolean;
   data?: PostFormData;
-  onSubmit?: (data: z.infer<typeof postFormSchema>) => Promise<void> | void;
+  onSubmit?: (data: PostFormData) => Promise<void> | void;
   onClose?: () => void;
 }
 
@@ -42,12 +41,12 @@ export function PostFormDialog({
   onSubmit,
   onClose,
 }: PostFormDialogProps) {
-  const form = useForm<z.infer<typeof postFormSchema>>({
+  const form = useForm<PostFormData>({
     resolver: zodResolver(postFormSchema),
     defaultValues,
   });
 
-  const handleSubmit = async (data: z.infer<typeof postFormSchema>) => {
+  const handleSubmit = async (data: PostFormData) => {
     if (typeof onSubmit === "function") {
       await onSubmit(data);
       handleClose();
