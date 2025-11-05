@@ -1,10 +1,10 @@
 "use client";
 
-import BlogCard from "@/components/blog-card";
 import {
   PostFormData,
   PostFormDialog,
 } from "@/components/blog/post-form-dialog";
+import PostCard from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -132,7 +132,7 @@ export default function HomePage() {
 
       <div className="flex flex-col gap-4">
         {filteredPosts.map((post) => (
-          <BlogCard
+          <PostCard
             key={post.id}
             title={post.title}
             description={post.description}

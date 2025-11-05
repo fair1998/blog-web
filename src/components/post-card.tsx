@@ -14,7 +14,7 @@ import {
 } from "./ui/card";
 import { Separator } from "./ui/separator";
 
-interface BlogCardProps {
+interface PostCardProps {
   title: string;
   description: string;
   content: string;
@@ -24,14 +24,14 @@ interface BlogCardProps {
   onDelete?: () => void;
 }
 
-export default function BlogCard({
+export default function PostCard({
   title,
   description,
   content,
   isPublic,
   onEdit,
   onDelete,
-}: BlogCardProps) {
+}: PostCardProps) {
   const [isViewExpanded, setIsViewExpanded] = useState(false);
 
   const handleViewToggle = () => {
