@@ -11,16 +11,26 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useBlogPosts } from "@/hooks/use-blog-posts";
-import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import { BlogPost } from "@/types/blog";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface PostFormDialogState {
   open: boolean;
   data: BlogPost | undefined;
+}
+
+interface FilterState {
+  search: string;
+  type: "all" | "public" | "private";
 }
 
 export default function HomePage() {
@@ -32,7 +42,10 @@ export default function HomePage() {
       data: undefined,
     });
 
-  const { searchQuery, isDebouncing, handleInputChange } = useDebouncedSearch();
+  const [filterState, setFilterState] = useState<FilterState>({
+    search: "",
+    type: "all",
+  });
 
   const toggleDialog = () => {
     setPostFormDialogState((prev) => ({
@@ -55,13 +68,32 @@ export default function HomePage() {
     await submitPost(values, postIdToEdit);
   };
 
-  const filterPosts = (searchQuery: string) => {
-    return blogPosts.filter((post) =>
-      post.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const handleFilter = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) => {
+    setFilterState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
-  const filteredPosts = filterPosts(searchQuery);
+  const filteredPosts = useMemo(() => {
+    return blogPosts.filter((post) => {
+      const matchesType =
+        filterState.type === "all"
+          ? true
+          : filterState.type === "public"
+          ? post.public
+          : !post.public;
+
+      const matchesSearch = post.title
+        .toLowerCase()
+        .includes(filterState.search.toLowerCase());
+
+      return matchesType && matchesSearch;
+    });
+  }, [blogPosts, filterState]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -74,12 +106,28 @@ export default function HomePage() {
         <InputGroup className="w-full max-w-xs">
           <InputGroupInput
             placeholder="Search..."
-            onChange={handleInputChange}
+            onChange={(e) => handleFilter("search", e.target.value)}
           />
           <InputGroupAddon>
-            {isDebouncing ? <Spinner /> : <Search />}
+            <Search />
           </InputGroupAddon>
         </InputGroup>
+
+        <Select
+          value={filterState.type}
+          onValueChange={(value) =>
+            handleFilter("type", value as FilterState["type"])
+          }
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="private">Private</SelectItem>
+            <SelectItem value="public">Public</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex flex-col gap-4">
