@@ -10,12 +10,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  SignInFormData,
+  SignInFormSchema,
+} from "@/lib/validators/sign-in.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
-export default function SignPage() {
-  const handleSubmit = async (formData: FormData) => {
-    const username = formData.get("username") as string;
+export default function SignInPage() {
+  const form = useForm<SignInFormData>({
+    resolver: zodResolver(SignInFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = async (data: SignInFormData) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const username = data.username;
+
     await setToken(username);
   };
 
@@ -28,33 +50,62 @@ export default function SignPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={handleSubmit} id="login-form">
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="********"
-                required
-              />
-            </div>
-          </div>
+        <form id="login-form" onSubmit={form.handleSubmit(handleSubmit)}>
+          <FieldGroup>
+            {/* field username */}
+            <Controller
+              name="username"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="login-form-username">
+                    Username
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="login-form-username"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your username"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            {/* field password */}
+            <Controller
+              name="password"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="login-form-password">
+                    Password
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="login-form-password"
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your password"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full" form="login-form">
+        <Button
+          type="submit"
+          className="w-full"
+          form="login-form"
+          disabled={form.formState.isSubmitting}
+        >
           Login
         </Button>
       </CardFooter>
