@@ -1,127 +1,106 @@
 "use client";
 
 import BlogCard from "@/components/blog-card";
-import { PostFormDialog } from "@/components/blog/post-form-dialog";
+import {
+  PostFormData,
+  PostFormDialog,
+} from "@/components/blog/post-form-dialog";
 import { Button } from "@/components/ui/button";
-import { nanoid } from "nanoid";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
+import { useBlogPosts } from "@/hooks/use-blog-posts";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
+import { BlogPost } from "@/types/blog";
+import { Search } from "lucide-react";
 import { useState } from "react";
-import { BlogFormData } from "./form-dialog";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  description: string;
-  content: string;
-  public: boolean;
+interface PostFormDialogState {
+  open: boolean;
+  data: BlogPost | undefined;
 }
 
-const generateInitialPosts = (): BlogPost[] => {
-  const posts: BlogPost[] = [];
-  for (let i = 1; i <= 5; i++) {
-    posts.push({
-      id: nanoid(),
-      title: `Blog 000${i}`,
-      description: "Lorem ipsum dolor sit amet.",
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto odio facilis earum veritatis ipsum, repellendus delectus nemo ad blanditiis nesciunt temporibus quae iure aliquid soluta ipsam. Odio tempore rem adipisci!",
-      public: i % 2 === 0,
-    });
-  }
-  return posts;
-};
-
 export default function HomePage() {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(
-    generateInitialPosts()
-  );
-  const [dialogOpen, setDialogOpen] = useState<{
-    open: boolean;
-    data: BlogPost | undefined;
-  }>({
-    open: false,
-    data: undefined,
-  });
+  const { blogPosts, deletePost, submitPost } = useBlogPosts();
 
-  console.log("blogPosts :>> ", blogPosts);
-
-  const handleToggleFormDialog = () => {
-    setDialogOpen((prev) => ({ ...prev, open: !prev.open, data: undefined }));
-  };
-
-  const handleEditPost = (index: number) => {
-    setDialogOpen({
-      open: true,
-      data: blogPosts[index],
+  const [postFormDialogState, setPostFormDialogState] =
+    useState<PostFormDialogState>({
+      open: false,
+      data: undefined,
     });
+
+  const { searchQuery, isDebouncing, handleInputChange } = useDebouncedSearch();
+
+  const toggleDialog = () => {
+    setPostFormDialogState((prev) => ({
+      ...prev,
+      open: !prev.open,
+      data: undefined,
+    }));
   };
 
-  const handleDeletePost = (index: number) => {
-    const updatedPosts = blogPosts.filter((_, i) => i !== index);
-    setBlogPosts(updatedPosts);
+  const openEditDialog = (post: BlogPost) => {
+    setPostFormDialogState((prev) => ({
+      ...prev,
+      open: true,
+      data: post,
+    }));
   };
 
-  const createPost = (data: BlogFormData) => {
-    return {
-      id: nanoid(),
-      title: data.title,
-      description: data.description,
-      content: data.content,
-      public: data.public,
-    };
+  const handleSubmitPost = async (values: PostFormData) => {
+    const postIdToEdit = postFormDialogState.data?.id;
+    await submitPost(values, postIdToEdit);
   };
 
-  const editPost = (id: string, data: BlogFormData) => {
-    return blogPosts.map((post) =>
-      post.id === id
-        ? {
-            ...post,
-            title: data.title,
-            description: data.description,
-            content: data.content,
-            public: data.public,
-          }
-        : post
+  const filterPosts = (searchQuery: string) => {
+    return blogPosts.filter((post) =>
+      post.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
-  const handleSubmitPost = async (data: BlogFormData) => {
-    if (dialogOpen.data) {
-      const updatedPosts = editPost(dialogOpen.data.id, data);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setBlogPosts(updatedPosts);
-    } else {
-      const newPost = createPost(data);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setBlogPosts((prevPosts) => [newPost, ...prevPosts]);
-    }
-  };
+  const filteredPosts = filterPosts(searchQuery);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Blog management</h1>
-        <Button onClick={handleToggleFormDialog}>New Post</Button>
+        <Button onClick={toggleDialog}>New Post</Button>
+      </div>
+
+      <div className="flex items-center justify-between gap-4">
+        <InputGroup className="w-full max-w-xs">
+          <InputGroupInput
+            placeholder="Search..."
+            onChange={handleInputChange}
+          />
+          <InputGroupAddon>
+            {isDebouncing ? <Spinner /> : <Search />}
+          </InputGroupAddon>
+        </InputGroup>
       </div>
 
       <div className="flex flex-col gap-4">
-        {blogPosts.map((post, index) => (
+        {filteredPosts.map((post) => (
           <BlogCard
             key={post.id}
             title={post.title}
             description={post.description}
             content={post.content}
             isPublic={post.public}
-            onEdit={() => handleEditPost(index)}
-            onDelete={() => handleDeletePost(index)}
+            onEdit={() => openEditDialog(post)}
+            onDelete={() => deletePost(post.id)}
           />
         ))}
       </div>
 
       <PostFormDialog
-        open={dialogOpen.open}
-        data={dialogOpen.data}
+        open={postFormDialogState.open}
+        data={postFormDialogState.data}
         onSubmit={handleSubmitPost}
-        onClose={handleToggleFormDialog}
+        onClose={toggleDialog}
       />
     </div>
   );
