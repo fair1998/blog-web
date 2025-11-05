@@ -6,7 +6,7 @@ import { REDIRECT_ERROR_CODE } from "next/dist/client/components/redirect-error"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function setCookie(username: string): Promise<void> {
+export async function setToken(username: string): Promise<void> {
   try {
     const cookieStore = await cookies();
     cookieStore.set(AUTH_COOKIE_NAME, username, {
@@ -20,7 +20,7 @@ export async function setCookie(username: string): Promise<void> {
     }
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
-    console.error("[SignInAction] Error:", errorMessage);
+    console.error("[SetTokenAction] Error:", errorMessage);
     throw new Error("Internal Server Error");
   }
 }

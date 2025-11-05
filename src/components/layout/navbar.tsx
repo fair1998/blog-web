@@ -1,12 +1,12 @@
-import { deleteCookie } from "@/actions/token-cookie/delete-cookie";
-import { getCookie } from "@/actions/token-cookie/get-cookie";
+import { deleteToken } from "@/actions/auth/delete-token";
+import { getToken } from "@/actions/auth/get-token";
 import { PAGE_URLS } from "@/constants/page-urls";
 import { LogOut, Rss } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
 export default async function Navbar() {
-  const username = await getCookie();
+  const username = await getToken();
 
   return (
     <nav className="flex items-center justify-between h-16">
@@ -19,10 +19,9 @@ export default async function Navbar() {
         {username ? (
           <>
             <span className="text-sm font-medium">Welcome, {username}</span>
-            <form action={deleteCookie}>
-              <Button variant="outline" type="submit">
-                <LogOut className="size-4 mr-2" />
-                Sign Out
+            <form action={deleteToken}>
+              <Button size="icon" variant="destructive" type="submit">
+                <LogOut className="size-4" />
               </Button>
             </form>
           </>

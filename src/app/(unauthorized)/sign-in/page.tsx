@@ -1,6 +1,6 @@
 "use client";
 
-import { setCookie } from "@/actions/token-cookie/set-cookie";
+import { setToken } from "@/actions/auth/set-token";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 export default function SignPage() {
   const handleSubmit = async (formData: FormData) => {
     const username = formData.get("username") as string;
-    await setCookie(username);
+    await setToken(username);
   };
 
   return (

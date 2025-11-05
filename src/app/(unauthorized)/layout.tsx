@@ -1,13 +1,11 @@
-import { AUTH_COOKIE_NAME } from "@/constants/auth.cookie";
+import { getToken } from "@/actions/auth/get-token";
 import { PAGE_URLS } from "@/constants/page-urls";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function UnauthorizedLayout({
   children,
 }: NextAppLayoutProps) {
-  const cookieStorage = await cookies();
-  const token = cookieStorage.get(AUTH_COOKIE_NAME)?.value;
+  const token = await getToken();
 
   if (token) {
     return redirect(PAGE_URLS.HOME);

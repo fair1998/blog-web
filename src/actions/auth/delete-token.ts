@@ -6,7 +6,7 @@ import { REDIRECT_ERROR_CODE } from "next/dist/client/components/redirect-error"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function deleteCookie(): Promise<void> {
+export async function deleteToken(): Promise<void> {
   try {
     const cookieStore = await cookies();
     cookieStore.delete(AUTH_COOKIE_NAME);
@@ -18,7 +18,7 @@ export async function deleteCookie(): Promise<void> {
     }
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
-    console.error("[SignOutAction] Error:", errorMessage);
+    console.error("[DeleteTokenAction] Error:", errorMessage);
     throw new Error("Internal Server Error");
   }
 }
