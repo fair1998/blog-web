@@ -1,4 +1,4 @@
-import { generateInitialPosts } from "@/lib/utils/blog";
+import { generateInitialPosts } from "@/lib/mocks/initial-posts";
 import { PostFormData } from "@/lib/validators/post.schema";
 import { BlogPost } from "@/types/blog";
 import { nanoid } from "nanoid";
