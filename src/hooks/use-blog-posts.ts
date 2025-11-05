@@ -1,5 +1,5 @@
-import { PostFormData } from "@/components/blog/post-form-dialog";
 import { generateInitialPosts } from "@/lib/utils/blog";
+import { PostFormData } from "@/lib/validators/post.schema";
 import { BlogPost } from "@/types/blog";
 import { nanoid } from "nanoid";
 import { useState } from "react";

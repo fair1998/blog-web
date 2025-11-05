@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  PostFormData,
-  PostFormDialog,
-} from "@/components/blog/post-form-dialog";
+import { PostFormDialog } from "@/components/blog/post-form-dialog";
 import PostCard from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useBlogPosts } from "@/hooks/use-blog-posts";
+import { PostFormData } from "@/lib/validators/post.schema";
 import { BlogPost } from "@/types/blog";
 import { Search, SearchCheck } from "lucide-react";
 import { useMemo, useState } from "react";

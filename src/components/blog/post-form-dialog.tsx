@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { PostFormData, postFormSchema } from "@/lib/validators/post.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -28,40 +29,10 @@ const defaultValues = {
   content: "",
 };
 
-const formSchema = z.object({
-  public: z.boolean(),
-  title: z
-    .string()
-    .refine(
-      (value) => !value.startsWith(" "),
-      "Title cannot start with a space"
-    )
-    .min(5, "Title must be at least 5 characters long")
-    .max(100, "Title must be at most 100 characters long"),
-  description: z
-    .string()
-    .refine(
-      (value) => !value.startsWith(" "),
-      "Description cannot start with a space"
-    )
-    .min(5, "Description must be at least 5 characters long")
-    .max(500, "Description must be at most 500 characters long"),
-  content: z
-    .string()
-    .refine(
-      (value) => !value.startsWith(" "),
-      "Content cannot start with a space"
-    )
-    .min(5, "Content must be at least 5 characters long")
-    .max(2000, "Content must be at most 2000 characters long"),
-});
-
-export type PostFormData = z.infer<typeof formSchema>;
-
 interface PostFormDialogProps {
   open?: boolean;
   data?: PostFormData;
-  onSubmit?: (data: z.infer<typeof formSchema>) => Promise<void> | void;
+  onSubmit?: (data: z.infer<typeof postFormSchema>) => Promise<void> | void;
   onClose?: () => void;
 }
 
@@ -71,12 +42,12 @@ export function PostFormDialog({
   onSubmit,
   onClose,
 }: PostFormDialogProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof postFormSchema>>({
+    resolver: zodResolver(postFormSchema),
     defaultValues,
   });
 
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (data: z.infer<typeof postFormSchema>) => {
     if (typeof onSubmit === "function") {
       await onSubmit(data);
       handleClose();
